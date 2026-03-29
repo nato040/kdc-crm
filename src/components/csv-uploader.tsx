@@ -10,7 +10,8 @@ interface CSVUploaderProps {
   clientId: string;
   label: string;
   table: string;
-  parser: (csvText: string, clientId: string) => Record<string, unknown>[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  parser: (csvText: string, clientId: string) => any[];
 }
 
 export function CSVUploader({ clientId, label, table, parser }: CSVUploaderProps) {

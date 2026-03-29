@@ -8,13 +8,16 @@ import {
   Users,
   Upload,
   BarChart3,
+  TrendingUp,
   Calendar,
   FileText,
+  DollarSign,
   LogOut,
 } from "lucide-react";
 
 const globalNav = [
   { label: "Clients", href: "/clients", icon: Users },
+  { label: "Finance", href: "/finance", icon: DollarSign },
 ];
 
 interface SidebarProps {
@@ -28,6 +31,7 @@ export function Sidebar({ clientId, clientName }: SidebarProps) {
   const clientNav = clientId
     ? [
         { label: "Dashboard", href: `/clients/${clientId}/dashboard`, icon: BarChart3 },
+        { label: "Analytics", href: `/clients/${clientId}/analytics`, icon: TrendingUp },
         { label: "Uploads", href: `/clients/${clientId}/uploads`, icon: Upload },
         { label: "Calendar", href: `/clients/${clientId}/calendar`, icon: Calendar },
         { label: "Briefs", href: `/clients/${clientId}/briefs`, icon: FileText },
@@ -47,7 +51,7 @@ export function Sidebar({ clientId, clientName }: SidebarProps) {
         {/* Global */}
         <nav className="space-y-0.5">
           {globalNav.map((item) => {
-            const active = pathname === item.href;
+            const active = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
               <Link
                 key={item.href}

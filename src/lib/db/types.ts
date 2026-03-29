@@ -103,3 +103,48 @@ export interface Brief {
   status: string | null;
   created_at: string;
 }
+
+// ── Finance ──────────────────────────────────
+
+export interface FinanceAccount {
+  id: string;
+  name: string;
+  account_type: "checking" | "savings" | "credit_card";
+  last_four: string | null;
+  created_at: string;
+}
+
+export interface StatementUpload {
+  id: string;
+  account_id: string;
+  file_name: string;
+  file_path: string | null;
+  upload_month: string | null;
+  row_count: number;
+  uploaded_by: string | null;
+  created_at: string;
+}
+
+export interface Transaction {
+  id: string;
+  account_id: string;
+  statement_upload_id: string | null;
+  tx_date: string;
+  description: string | null;
+  amount: number;
+  category: string | null;
+  reference: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface Receipt {
+  id: string;
+  transaction_id: string | null;
+  file_name: string;
+  file_path: string;
+  content_type: string | null;
+  notes: string | null;
+  uploaded_by: string | null;
+  created_at: string;
+}
