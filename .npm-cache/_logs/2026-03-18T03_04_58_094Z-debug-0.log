@@ -1,0 +1,87 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@11.9.0
+2 info using node@v24.14.0
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/teodoropasiak/kdc-crm/.npmrc
+5 silly config load:file:/Users/teodoropasiak/.npmrc
+6 silly config load:file:/usr/local/etc/npmrc
+7 verbose title npm install
+8 verbose argv "install" "--cache" "/Users/teodoropasiak/kdc-crm/.npm-cache"
+9 verbose logfile logs-max:10 dir:/Users/teodoropasiak/kdc-crm/.npm-cache/_logs/2026-03-18T03_04_58_094Z-
+10 verbose logfile /Users/teodoropasiak/kdc-crm/.npm-cache/_logs/2026-03-18T03_04_58_094Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+13 silly idealTree buildDeps
+14 silly fetch manifest @supabase/ssr@^0.5.2
+15 silly packumentCache full:https://registry.npmjs.org/@supabase%2fssr cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/@supabase%2fssr 93ms (cache miss)
+17 silly packumentCache full:https://registry.npmjs.org/@supabase%2fssr set size:undefined disposed:false
+18 silly fetch manifest @supabase/supabase-js@^2.45.0
+19 silly packumentCache full:https://registry.npmjs.org/@supabase%2fsupabase-js cache-miss
+20 http fetch GET 200 https://registry.npmjs.org/@supabase%2fsupabase-js 352ms (cache miss)
+21 silly packumentCache full:https://registry.npmjs.org/@supabase%2fsupabase-js set size:undefined disposed:false
+22 silly fetch manifest next@15.0.3
+23 silly packumentCache full:https://registry.npmjs.org/next cache-miss
+24 http fetch GET 200 https://registry.npmjs.org/next 272ms (cache miss)
+25 silly packumentCache full:https://registry.npmjs.org/next set size:undefined disposed:false
+26 silly fetch manifest @opentelemetry/api@^1.1.0
+27 silly packumentCache full:https://registry.npmjs.org/@opentelemetry%2fapi cache-miss
+28 http fetch GET 200 https://registry.npmjs.org/@opentelemetry%2fapi 72ms (cache miss)
+29 silly packumentCache full:https://registry.npmjs.org/@opentelemetry%2fapi set size:undefined disposed:false
+30 silly fetch manifest @playwright/test@^1.41.2
+31 silly packumentCache full:https://registry.npmjs.org/@playwright%2ftest cache-miss
+32 http fetch GET 200 https://registry.npmjs.org/@playwright%2ftest 205ms (cache miss)
+33 silly packumentCache full:https://registry.npmjs.org/@playwright%2ftest set size:undefined disposed:false
+34 silly fetch manifest babel-plugin-react-compiler@*
+35 silly packumentCache full:https://registry.npmjs.org/babel-plugin-react-compiler cache-miss
+36 http fetch GET 200 https://registry.npmjs.org/babel-plugin-react-compiler 39ms (cache miss)
+37 silly packumentCache full:https://registry.npmjs.org/babel-plugin-react-compiler set size:undefined disposed:false
+38 silly fetch manifest react@^19.0.0
+39 silly packumentCache full:https://registry.npmjs.org/react cache-miss
+40 http fetch GET 200 https://registry.npmjs.org/react 104ms (cache miss)
+41 silly packumentCache full:https://registry.npmjs.org/react set size:undefined disposed:false
+42 silly fetch manifest react@^18.2.0 || 19.0.0-rc-66855b96-20241106
+43 silly packumentCache full:https://registry.npmjs.org/react cache-miss
+44 http cache https://registry.npmjs.org/react 9ms (cache hit)
+45 silly packumentCache full:https://registry.npmjs.org/react set size:6547508 disposed:false
+46 verbose stack Error: unable to resolve dependency tree
+46 verbose stack     at #failPeerConflict (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:1402:25)
+46 verbose stack     at #loadPeerSet (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:1368:33)
+46 verbose stack     at async #buildDepStep (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:916:11)
+46 verbose stack     at async Arborist.buildIdealTree (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:170:7)
+46 verbose stack     at async Promise.all (index 1)
+46 verbose stack     at async Arborist.reify (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/reify.js:110:5)
+46 verbose stack     at async Install.exec (/usr/local/lib/node_modules/npm/lib/commands/install.js:151:5)
+46 verbose stack     at async Npm.exec (/usr/local/lib/node_modules/npm/lib/npm.js:208:9)
+46 verbose stack     at async module.exports (/usr/local/lib/node_modules/npm/lib/cli/entry.js:67:5)
+47 error code ERESOLVE
+48 error ERESOLVE unable to resolve dependency tree
+49 error
+50 error While resolving: kdc-crm@0.1.0
+50 error Found: react@19.2.4
+50 error node_modules/react
+50 error   react@"^19.0.0" from the root project
+50 error
+50 error Could not resolve dependency:
+50 error peer react@"^18.2.0 || 19.0.0-rc-66855b96-20241106" from next@15.0.3
+50 error node_modules/next
+50 error   next@"15.0.3" from the root project
+50 error
+50 error Fix the upstream dependency conflict, or retry
+50 error this command with --force or --legacy-peer-deps
+50 error to accept an incorrect (and potentially broken) dependency resolution.
+51 error
+51 error
+51 error For a full report see:
+51 error /Users/teodoropasiak/kdc-crm/.npm-cache/_logs/2026-03-18T03_04_58_094Z-eresolve-report.txt
+52 silly unfinished npm timer reify 1773803098188
+53 silly unfinished npm timer reify:loadTrees 1773803098189
+54 silly unfinished npm timer idealTree:buildDeps 1773803098193
+55 silly unfinished npm timer idealTree:#root 1773803098193
+56 verbose cwd /Users/teodoropasiak/kdc-crm
+57 verbose os Darwin 25.3.0
+58 verbose node v24.14.0
+59 verbose npm  v11.9.0
+60 verbose exit 1
+61 verbose code 1
+62 error A complete log of this run can be found in: /Users/teodoropasiak/kdc-crm/.npm-cache/_logs/2026-03-18T03_04_58_094Z-debug-0.log

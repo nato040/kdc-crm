@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ivory: 40 33% 96%;
+    --taupe: 30 10% 70%;
+    --taupe-light: 30 12% 88%;
+    --taupe-dark: 25 8% 42%;
+    --charcoal: 220 10% 16%;
+    --charcoal-light: 220 8% 28%;
+  }
+}
+
+body {
+  background-color: hsl(var(--ivory));
+  color: hsl(var(--charcoal));
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+::selection {
+  background-color: hsl(var(--taupe-light));
+}
