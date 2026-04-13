@@ -17,6 +17,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { eachDayOfInterval, addDays, startOfDay, format, parseISO } from "date-fns";
 import { toZonedTime, fromZonedTime } from "date-fns-tz";
+import { queryLatestSnapshotMap } from "../finance/query-helpers";
 import type {
   ComputeInput,
   ComputeOutput,
@@ -63,14 +64,9 @@ function createServiceClient() {
 
 /**
  * Query campaigns in the billing period and their latest incremental
- * snapshots. Two separate queries to avoid Supabase nested-select
- * truncation — a nested select returns an array per parent row that
- * can be silently truncated by PostgREST's default limit. With multiple
- * snapshots per campaign (after backfill or repeat syncs), that would
- * produce silently wrong "latest" picks.
- *
- * Returns campaign revenue aggregated by Eastern-time calendar day,
- * plus diagnostic counts.
+ * snapshots. Delegates to the shared two-query helper in
+ * finance/query-helpers.ts, then aggregates revenue by Eastern-time
+ * calendar day for commission calculation.
  */
 async function queryCampaignRevenueByDay(
   supabase: SupabaseClient,
@@ -82,72 +78,24 @@ async function queryCampaignRevenueByDay(
   campaignsConsidered: number;
   campaignsMissingSnapshots: number;
 }> {
-  // Query 1: campaigns in the period (no nested snapshots)
-  const { data: campaigns, error: campaignsError } = await supabase
-    .from("campaigns")
-    .select("id, send_time")
-    .eq("client_id", clientId)
-    .gte("send_time", periodStartUtc)
-    .lt("send_time", periodEndExclusiveUtc)
-    .not("send_time", "is", null);
-
-  if (campaignsError) {
-    throw new Error(`Failed to query campaigns: ${campaignsError.message}`);
-  }
-
-  const campaignList = campaigns ?? [];
-  const campaignIds = campaignList.map((c) => c.id as string);
-
-  // Query 2: all incremental snapshots for those campaigns, sorted DESC
-  // so the first occurrence of each campaign_id is the most recent.
-  // Uses the composite index (campaign_id, synced_at DESC) from 00004.
-  let campaignSnapshots: Array<{
-    campaign_id: string;
-    conversion_value: number | null;
-  }> = [];
-
-  if (campaignIds.length > 0) {
-    const { data, error } = await supabase
-      .from("campaign_snapshots")
-      .select("campaign_id, conversion_value, synced_at")
-      .in("campaign_id", campaignIds)
-      .eq("run_type", "incremental")
-      .order("synced_at", { ascending: false });
-
-    if (error) {
-      throw new Error(
-        `Failed to query campaign snapshots: ${error.message}`
-      );
-    }
-    campaignSnapshots = (data ?? []) as Array<{
-      campaign_id: string;
-      conversion_value: number | null;
-    }>;
-  }
-
-  // Build map: campaign_id → latest incremental conversion_value.
-  // Snapshots sorted DESC by synced_at, so first occurrence wins.
-  const latestCampaignRevenue = new Map<string, number>();
-  for (const snap of campaignSnapshots) {
-    if (!latestCampaignRevenue.has(snap.campaign_id)) {
-      latestCampaignRevenue.set(
-        snap.campaign_id,
-        snap.conversion_value ?? 0
-      );
-    }
-  }
+  const { campaigns, snapshotMap } = await queryLatestSnapshotMap(
+    supabase,
+    clientId,
+    periodStartUtc,
+    periodEndExclusiveUtc
+  );
 
   // Diagnostics
-  const campaignsConsidered = campaignList.length;
-  const campaignsMissingSnapshots =
-    campaignsConsidered - latestCampaignRevenue.size;
+  const campaignsConsidered = campaigns.length;
+  const campaignsMissingSnapshots = campaignsConsidered - snapshotMap.size;
 
   // Aggregate revenue by Eastern-time calendar day
   const revenueByDay = new Map<string, number>();
-  for (const campaign of campaignList) {
-    if (!latestCampaignRevenue.has(campaign.id)) continue; // missing snapshot, already counted
+  for (const campaign of campaigns) {
+    const snap = snapshotMap.get(campaign.id);
+    if (!snap) continue; // missing snapshot, already counted
 
-    const revenue = latestCampaignRevenue.get(campaign.id)!;
+    const revenue = snap.conversion_value ?? 0;
     const sendTimeUtc = parseISO(campaign.send_time!);
     const sendTimeEastern = toZonedTime(sendTimeUtc, TIMEZONE);
     const dayKey = format(sendTimeEastern, "yyyy-MM-dd");
