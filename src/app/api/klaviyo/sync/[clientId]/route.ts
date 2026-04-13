@@ -81,10 +81,12 @@ export async function POST(
   const nowDate = new Date();
 
   let campaignsIdentified = 0;
-  let campaignsSynced = 0;
-  let campaignsSkipped = 0;
+  let campaignsSkippedDrafts = 0;
+  let campaignsMissingStats = 0;
+  let campaignsSnapshotted = 0;
   let flowsIdentified = 0;
-  let flowsSynced = 0;
+  let flowsMissingStats = 0;
+  let flowsSnapshotted = 0;
   let campaignError: string | null = null;
   let flowError: string | null = null;
 
@@ -163,7 +165,7 @@ export async function POST(
       // Draft campaigns have no engagement data yet — identity row is
       // upserted above, snapshot is deferred until first send.
       if (!campaign.sendTime) {
-        campaignsSkipped++;
+        campaignsSkippedDrafts++;
         continue;
       }
 
@@ -191,12 +193,23 @@ export async function POST(
           revenue_per_recipient: stats.revenuePerRecipient,
           average_order_value: stats.averageOrderValue,
         });
+        campaignsSnapshotted++;
+      } else {
+        // Has sendTime but Klaviyo returned no metrics in the report window
+        campaignsMissingStats++;
       }
-      // If no stats: skip snapshot. Identity row already landed in step 8.
-      // campaigns_latest view LEFT JOINs — shows identity with null metrics.
-      // Next sync picks up stats when Klaviyo has processed them.
+    }
 
-      campaignsSynced++;
+    // Arithmetic assertion: counter totals must match identified count
+    const campaignCounterSum =
+      campaignsSkippedDrafts + campaignsMissingStats + campaignsSnapshotted;
+    if (campaignCounterSum !== campaignsIdentified) {
+      console.error(
+        `[sync] Campaign counter mismatch: identified=${campaignsIdentified} but skipped_drafts(${campaignsSkippedDrafts}) + missing_stats(${campaignsMissingStats}) + snapshotted(${campaignsSnapshotted}) = ${campaignCounterSum}`
+      );
+      throw new Error(
+        `Campaign counter arithmetic failed: ${campaignsIdentified} !== ${campaignCounterSum}`
+      );
     }
   } catch (error) {
     campaignError =
@@ -278,9 +291,21 @@ export async function POST(
           revenue_per_recipient: stats.revenuePerRecipient,
           average_order_value: stats.averageOrderValue,
         });
+        flowsSnapshotted++;
+      } else {
+        flowsMissingStats++;
       }
+    }
 
-      flowsSynced++;
+    // Arithmetic assertion: counter totals must match identified count
+    const flowCounterSum = flowsSnapshotted + flowsMissingStats;
+    if (flowCounterSum !== flowsIdentified) {
+      console.error(
+        `[sync] Flow counter mismatch: identified=${flowsIdentified} but snapshotted(${flowsSnapshotted}) + missing_stats(${flowsMissingStats}) = ${flowCounterSum}`
+      );
+      throw new Error(
+        `Flow counter arithmetic failed: ${flowsIdentified} !== ${flowCounterSum}`
+      );
     }
   } catch (error) {
     flowError =
@@ -332,8 +357,8 @@ export async function POST(
     .from("sync_runs")
     .update({
       status: finalStatus,
-      campaigns_synced: campaignsSynced,
-      flows_synced: flowsSynced,
+      campaigns_synced: campaignsSnapshotted,
+      flows_synced: flowsSnapshotted,
       error: combinedError,
       finished_at: new Date().toISOString(),
       duration_ms: durationMs,
@@ -346,10 +371,12 @@ export async function POST(
     return NextResponse.json({
       ok: true,
       campaigns_identified: campaignsIdentified,
-      campaigns_synced: campaignsSynced,
-      campaigns_skipped: campaignsSkipped,
+      campaigns_skipped_drafts: campaignsSkippedDrafts,
+      campaigns_missing_stats: campaignsMissingStats,
+      campaigns_snapshotted: campaignsSnapshotted,
       flows_identified: flowsIdentified,
-      flows_synced: flowsSynced,
+      flows_missing_stats: flowsMissingStats,
+      flows_snapshotted: flowsSnapshotted,
       duration_ms: durationMs,
     });
   }
@@ -360,10 +387,12 @@ export async function POST(
         ok: true,
         partial: true,
         campaigns_identified: campaignsIdentified,
-        campaigns_synced: campaignsSynced,
-        campaigns_skipped: campaignsSkipped,
+        campaigns_skipped_drafts: campaignsSkippedDrafts,
+        campaigns_missing_stats: campaignsMissingStats,
+        campaigns_snapshotted: campaignsSnapshotted,
         flows_identified: flowsIdentified,
-        flows_synced: flowsSynced,
+        flows_missing_stats: flowsMissingStats,
+        flows_snapshotted: flowsSnapshotted,
         duration_ms: durationMs,
         error: combinedError,
       },
