@@ -12,6 +12,7 @@ import {
   Calendar,
   FileText,
   DollarSign,
+  Plug,
   LogOut,
 } from "lucide-react";
 
@@ -35,6 +36,7 @@ export function Sidebar({ clientId, clientName }: SidebarProps) {
         { label: "Uploads", href: `/clients/${clientId}/uploads`, icon: Upload },
         { label: "Calendar", href: `/clients/${clientId}/calendar`, icon: Calendar },
         { label: "Briefs", href: `/clients/${clientId}/briefs`, icon: FileText },
+        { label: "Integrations", href: `/clients/${clientId}/integrations`, icon: Plug },
       ]
     : [];
 
