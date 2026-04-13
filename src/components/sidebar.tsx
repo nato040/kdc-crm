@@ -14,6 +14,8 @@ import {
   DollarSign,
   Plug,
   LogOut,
+  Mail,
+  Workflow,
 } from "lucide-react";
 
 const globalNav = [
@@ -33,6 +35,8 @@ export function Sidebar({ clientId, clientName }: SidebarProps) {
     ? [
         { label: "Dashboard", href: `/clients/${clientId}/dashboard`, icon: BarChart3 },
         { label: "Analytics", href: `/clients/${clientId}/analytics`, icon: TrendingUp },
+        { label: "Campaigns", href: `/clients/${clientId}/campaigns`, icon: Mail },
+        { label: "Flows", href: `/clients/${clientId}/flows`, icon: Workflow },
         { label: "Uploads", href: `/clients/${clientId}/uploads`, icon: Upload },
         { label: "Calendar", href: `/clients/${clientId}/calendar`, icon: Calendar },
         { label: "Briefs", href: `/clients/${clientId}/briefs`, icon: FileText },
