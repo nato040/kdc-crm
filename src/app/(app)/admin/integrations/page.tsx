@@ -3,20 +3,16 @@ import { PageHeader } from "@/components/page-header";
 import { notFound } from "next/navigation";
 import { KlaviyoIntegration } from "./klaviyo-integration";
 
-export default async function IntegrationsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export default async function AdminIntegrationsPage() {
   const supabase = await createClient();
 
-  const { data: client } = await supabase
+  // For v1, query the single existing client
+  const { data: clients } = await supabase
     .from("clients")
     .select("id, name, klaviyo_key_id, last_synced_at")
-    .eq("id", id)
-    .single();
+    .limit(1);
 
+  const client = clients?.[0];
   if (!client) notFound();
 
   return (

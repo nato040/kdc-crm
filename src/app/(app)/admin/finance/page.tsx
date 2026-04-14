@@ -156,21 +156,19 @@ function Sparkline({
 
 // ── Main page ─────────────────────────────────
 
-export default async function ClientFinancePage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export default async function AdminFinancePage() {
   const supabase = await createClient();
 
-  const { data: client } = await supabase
+  // For v1, query the single existing client
+  const { data: clients } = await supabase
     .from("clients")
     .select("id, name")
-    .eq("id", id)
-    .single();
+    .limit(1);
 
+  const client = clients?.[0];
   if (!client) notFound();
+
+  const clientId = client.id;
 
   // ── Time boundaries in Eastern time ──
 
@@ -222,13 +220,13 @@ export default async function ClientFinancePage({
     // Current month + all complete months
     const commissionPromises = [
       computeCommission({
-        clientId: id,
+        clientId,
         periodStart: currentPeriodStart,
         periodEnd: currentPeriodEnd,
       }),
       ...completeMonths.map((m) =>
         computeCommission({
-          clientId: id,
+          clientId,
           periodStart: m.start,
           periodEnd: m.end,
         })
@@ -287,7 +285,7 @@ export default async function ClientFinancePage({
   try {
     const allRevenue = await queryRevenueByMonth(
       supabase,
-      id,
+      clientId,
       "2024-01-01",
       currentPeriodEnd
     );
@@ -363,12 +361,11 @@ export default async function ClientFinancePage({
   try {
     // 24 complete months before current month
     const month24Start = subMonths(currentMonthStart, 24);
-    const month12Start = subMonths(currentMonthStart, 12);
     const lastCompleteMonth = subMonths(currentMonthStart, 1);
 
     const allRevenue = await queryRevenueByMonth(
       supabase,
-      id,
+      clientId,
       format(month24Start, "yyyy-MM-dd"),
       format(endOfMonth(lastCompleteMonth), "yyyy-MM-dd")
     );

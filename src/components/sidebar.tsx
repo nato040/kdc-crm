@@ -18,19 +18,20 @@ import {
   Workflow,
   Receipt,
   ArrowLeftRight,
+  UserCog,
 } from "lucide-react";
 
 const globalNav = [
   { label: "Clients", href: "/clients", icon: Users },
-  { label: "Finance", href: "/finance", icon: DollarSign },
 ];
 
 interface SidebarProps {
   clientId?: string;
   clientName?: string;
+  userRole?: string;
 }
 
-export function Sidebar({ clientId, clientName }: SidebarProps) {
+export function Sidebar({ clientId, clientName, userRole }: SidebarProps) {
   const pathname = usePathname();
 
   const clientNav = clientId
@@ -40,13 +41,20 @@ export function Sidebar({ clientId, clientName }: SidebarProps) {
         { label: "Analysis", href: `/clients/${clientId}/analysis`, icon: ArrowLeftRight },
         { label: "Campaigns", href: `/clients/${clientId}/campaigns`, icon: Mail },
         { label: "Flows", href: `/clients/${clientId}/flows`, icon: Workflow },
-        { label: "Finance", href: `/clients/${clientId}/finance`, icon: Receipt },
         { label: "Uploads", href: `/clients/${clientId}/uploads`, icon: Upload },
         { label: "Calendar", href: `/clients/${clientId}/calendar`, icon: Calendar },
         { label: "Briefs", href: `/clients/${clientId}/briefs`, icon: FileText },
-        { label: "Integrations", href: `/clients/${clientId}/integrations`, icon: Plug },
       ]
     : [];
+
+  const adminNav =
+    userRole === "admin"
+      ? [
+          { label: "Finance", href: "/admin/finance", icon: Receipt },
+          { label: "Integrations", href: "/admin/integrations", icon: Plug },
+          { label: "Users", href: "/admin/users", icon: UserCog },
+        ]
+      : [];
 
   return (
     <aside className="fixed inset-y-0 left-0 z-30 flex w-56 flex-col border-r border-taupe-light bg-white/40 backdrop-blur-sm">
@@ -88,12 +96,45 @@ export function Sidebar({ clientId, clientName }: SidebarProps) {
                 Client
               </p>
               <p className="mt-0.5 truncate text-sm font-medium text-charcoal">
-                {clientName || "—"}
+                {clientName || "\u2014"}
               </p>
             </div>
             <nav className="space-y-0.5">
               {clientNav.map((item) => {
                 const active = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors",
+                      active
+                        ? "bg-taupe-light text-charcoal"
+                        : "text-taupe-dark hover:bg-taupe-light/60 hover:text-charcoal"
+                    )}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </>
+        )}
+
+        {/* Admin section */}
+        {adminNav.length > 0 && (
+          <>
+            <div className="mt-6 mb-2 px-2.5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-taupe">
+                Admin
+              </p>
+            </div>
+            <nav className="space-y-0.5">
+              {adminNav.map((item) => {
+                const active =
+                  pathname === item.href ||
+                  pathname.startsWith(item.href + "/");
                 return (
                   <Link
                     key={item.href}
