@@ -19,6 +19,7 @@ import {
   Receipt,
   ArrowLeftRight,
   UserCog,
+  PenTool,
 } from "lucide-react";
 
 const globalNav = [
@@ -40,6 +41,7 @@ export function Sidebar({ clientId, clientName, userRole }: SidebarProps) {
         { label: "Analytics", href: `/clients/${clientId}/analytics`, icon: TrendingUp },
         { label: "Analysis", href: `/clients/${clientId}/analysis`, icon: ArrowLeftRight },
         { label: "Campaigns", href: `/clients/${clientId}/campaigns`, icon: Mail },
+        { label: "Email Builder", href: `/clients/${clientId}/email-builder`, icon: PenTool },
         { label: "Flows", href: `/clients/${clientId}/flows`, icon: Workflow },
         { label: "Uploads", href: `/clients/${clientId}/uploads`, icon: Upload },
         { label: "Calendar", href: `/clients/${clientId}/calendar`, icon: Calendar },
