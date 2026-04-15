@@ -63,7 +63,7 @@ export function DesignPreview({ campaignId, clientId, designUrl }: DesignPreview
             <img
               src={designUrl}
               alt="Email design preview"
-              className="w-full h-auto"
+              className="w-full max-h-[600px] object-contain"
               loading="lazy"
             />
           </div>
