@@ -275,6 +275,15 @@ export default async function CampaignsPage({
                           Design
                         </span>
                       )}
+                      {c.design_check_verdict && (
+                        <span className={`ml-1.5 inline-block rounded px-1.5 py-0.5 text-[9px] font-semibold uppercase ${
+                          c.design_check_verdict === "PASS"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}>
+                          {c.design_check_verdict}
+                        </span>
+                      )}
                     </td>
                     <td className="max-w-[220px] px-3 py-2 text-[13px] text-taupe-dark" title={subject.full ?? undefined}>
                       {subject.display}

@@ -12,6 +12,7 @@ import {
   fmtDayFull,
 } from "../../_components/format";
 import { DesignPreview } from "./design-preview";
+import { DesignCheck } from "./design-check";
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
@@ -82,6 +83,14 @@ export default async function CampaignDetailPage({
           campaignId={campaignId}
           clientId={id}
           designUrl={campaign.figma_url ?? null}
+        />
+
+        <DesignCheck
+          campaignId={campaignId}
+          clientId={id}
+          currentVerdict={campaign.design_check_verdict ?? null}
+          currentReason={campaign.design_check_reason ?? null}
+          imageUrl={campaign.figma_url ?? null}
         />
 
         <Section title="Identity">
