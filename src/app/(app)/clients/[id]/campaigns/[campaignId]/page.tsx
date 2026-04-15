@@ -11,6 +11,7 @@ import {
   fmtBool,
   fmtDayFull,
 } from "../../_components/format";
+import { FigmaDesign } from "./figma-design";
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
@@ -72,6 +73,12 @@ export default async function CampaignDetailPage({
       />
 
       <div className="space-y-6">
+        <FigmaDesign
+          campaignId={campaignId}
+          clientId={id}
+          figmaUrl={campaign.figma_url ?? null}
+        />
+
         <Section title="Identity">
           <Field label="Campaign name" value={campaign.campaign_name ?? "\u2014"} />
           <Field label="Subject line" value={campaign.subject_line ?? "\u2014"} />

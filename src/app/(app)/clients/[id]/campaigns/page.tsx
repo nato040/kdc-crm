@@ -270,6 +270,11 @@ export default async function CampaignsPage({
                       >
                         {name.display}
                       </Link>
+                      {c.figma_url && (
+                        <span className="ml-1.5 inline-block rounded bg-purple-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-purple-700">
+                          Figma
+                        </span>
+                      )}
                     </td>
                     <td className="max-w-[220px] px-3 py-2 text-[13px] text-taupe-dark" title={subject.full ?? undefined}>
                       {subject.display}
