@@ -272,7 +272,7 @@ export default async function CampaignsPage({
                       </Link>
                       {c.figma_url && (
                         <span className="ml-1.5 inline-block rounded bg-purple-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-purple-700">
-                          Figma
+                          Design
                         </span>
                       )}
                     </td>

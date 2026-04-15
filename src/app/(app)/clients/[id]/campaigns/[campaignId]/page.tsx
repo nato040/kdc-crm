@@ -11,7 +11,7 @@ import {
   fmtBool,
   fmtDayFull,
 } from "../../_components/format";
-import { FigmaDesign } from "./figma-design";
+import { DesignPreview } from "./design-preview";
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
@@ -73,10 +73,10 @@ export default async function CampaignDetailPage({
       />
 
       <div className="space-y-6">
-        <FigmaDesign
+        <DesignPreview
           campaignId={campaignId}
           clientId={id}
-          figmaUrl={campaign.figma_url ?? null}
+          designUrl={campaign.figma_url ?? null}
         />
 
         <Section title="Identity">

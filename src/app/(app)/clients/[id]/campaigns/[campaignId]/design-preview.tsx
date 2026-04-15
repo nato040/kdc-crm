@@ -2,18 +2,18 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { setCampaignFigmaUrl } from "./actions";
+import { setCampaignDesignUrl } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Link as LinkIcon, Pencil, Trash2 } from "lucide-react";
+import { Loader2, ImageIcon, Pencil, Trash2 } from "lucide-react";
 
-interface FigmaDesignProps {
+interface DesignPreviewProps {
   campaignId: string;
   clientId: string;
-  figmaUrl: string | null;
+  designUrl: string | null;
 }
 
-export function FigmaDesign({ campaignId, clientId, figmaUrl }: FigmaDesignProps) {
+export function DesignPreview({ campaignId, clientId, designUrl }: DesignPreviewProps) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -21,10 +21,10 @@ export function FigmaDesign({ campaignId, clientId, figmaUrl }: FigmaDesignProps
 
   function handleSubmit(formData: FormData) {
     setError(null);
-    const url = formData.get("figma_url") as string;
+    const url = formData.get("design_url") as string;
     startTransition(async () => {
       try {
-        await setCampaignFigmaUrl(campaignId, url || null, clientId);
+        await setCampaignDesignUrl(campaignId, url || null, clientId);
         setEditing(false);
         router.refresh();
       } catch (e) {
@@ -34,11 +34,11 @@ export function FigmaDesign({ campaignId, clientId, figmaUrl }: FigmaDesignProps
   }
 
   function handleRemove() {
-    if (!confirm("Remove the linked Figma design?")) return;
+    if (!confirm("Remove the linked design image?")) return;
     setError(null);
     startTransition(async () => {
       try {
-        await setCampaignFigmaUrl(campaignId, null, clientId);
+        await setCampaignDesignUrl(campaignId, null, clientId);
         setEditing(false);
         router.refresh();
       } catch (e) {
@@ -47,7 +47,7 @@ export function FigmaDesign({ campaignId, clientId, figmaUrl }: FigmaDesignProps
     });
   }
 
-  const showForm = !figmaUrl || editing;
+  const showForm = !designUrl || editing;
 
   return (
     <div className="rounded-lg border border-taupe-light bg-white/60 px-5 py-4">
@@ -55,23 +55,21 @@ export function FigmaDesign({ campaignId, clientId, figmaUrl }: FigmaDesignProps
         Design
       </h2>
 
-      {/* ── Embed iframe when URL exists and not editing ── */}
-      {figmaUrl && !editing && (
+      {/* ── Image display when URL exists and not editing ── */}
+      {designUrl && !editing && (
         <>
           <div className="rounded-lg border border-taupe-light/60 overflow-hidden">
-            <iframe
-              src={`https://www.figma.com/embed?embed_host=kdc&url=${encodeURIComponent(figmaUrl)}`}
-              className="w-full h-[600px] border-0"
-              allowFullScreen
-              title="Figma design preview"
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={designUrl}
+              alt="Email design preview"
+              className="w-full h-auto"
+              loading="lazy"
             />
           </div>
-          <p className="mt-2 text-[11px] italic text-taupe">
-            Make sure Figma sharing is set to &quot;Anyone with the link&quot; for the embed to render.
-          </p>
           <div className="mt-3 flex items-center gap-3">
-            <p className="text-[12px] text-taupe-dark truncate max-w-[400px]" title={figmaUrl}>
-              Linked: {figmaUrl.length > 60 ? figmaUrl.slice(0, 60) + "\u2026" : figmaUrl}
+            <p className="text-[12px] text-taupe-dark truncate max-w-[400px]" title={designUrl}>
+              Linked: {designUrl.length > 60 ? designUrl.slice(0, 60) + "\u2026" : designUrl}
             </p>
             <Button
               variant="outline"
@@ -103,17 +101,17 @@ export function FigmaDesign({ campaignId, clientId, figmaUrl }: FigmaDesignProps
       {/* ── Form: set or edit URL ── */}
       {showForm && (
         <div className="space-y-3">
-          {!figmaUrl && !editing && (
+          {!designUrl && !editing && (
             <p className="text-sm text-taupe-dark">
-              Paste a Figma file or frame URL to preview the design here.
+              Paste a direct image URL of the email design. Supports JPG, PNG, WebP.
             </p>
           )}
           <form action={handleSubmit} className="flex gap-2">
             <Input
-              name="figma_url"
+              name="design_url"
               type="url"
-              placeholder="Paste Figma URL..."
-              defaultValue={figmaUrl ?? ""}
+              placeholder="Paste image URL (Imgur, Supabase Storage, etc.)"
+              defaultValue={designUrl ?? ""}
               disabled={pending}
               className="max-w-lg font-mono text-xs"
             />
@@ -121,9 +119,9 @@ export function FigmaDesign({ campaignId, clientId, figmaUrl }: FigmaDesignProps
               {pending ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
               ) : (
-                <LinkIcon className="h-3.5 w-3.5" />
+                <ImageIcon className="h-3.5 w-3.5" />
               )}
-              {figmaUrl ? "Update" : "Link Figma design"}
+              {designUrl ? "Update" : "Link design"}
             </Button>
             {editing && (
               <Button

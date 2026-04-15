@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function setCampaignFigmaUrl(
+export async function setCampaignDesignUrl(
   campaignId: string,
   rawUrl: string | null,
   clientId: string
@@ -27,13 +27,30 @@ export async function setCampaignFigmaUrl(
     throw new Error("Only admins can edit campaign metadata");
   }
 
-  // Validate URL: must be null OR start with https://www.figma.com/ or https://figma.com/
+  // Validate URL: must be null OR a valid HTTPS URL pointing at an image
   let cleanUrl: string | null = null;
   if (rawUrl && rawUrl.trim()) {
     const trimmed = rawUrl.trim();
-    if (!trimmed.match(/^https:\/\/(www\.)?figma\.com\//)) {
-      throw new Error("URL must be a Figma URL (https://www.figma.com/...)");
+
+    // Must be HTTPS
+    if (!trimmed.match(/^https:\/\//)) {
+      throw new Error("URL must be HTTPS");
     }
+
+    // Should look like an image — accept common extensions OR known image hosts
+    const looksLikeImage = trimmed.match(
+      /\.(jpg|jpeg|png|webp|gif|svg)(\?|$)/i
+    );
+    const knownImageHost = trimmed.match(
+      /^https:\/\/(i\.imgur\.com|imgur\.com|.*\.supabase\.co\/storage|.*\.cloudinary\.com|.*\.amazonaws\.com|raw\.githubusercontent\.com)/
+    );
+
+    if (!looksLikeImage && !knownImageHost) {
+      throw new Error(
+        "URL must point to an image (.jpg, .png, .webp, .gif) or a known image host (Imgur, Supabase Storage, Cloudinary, S3, GitHub)"
+      );
+    }
+
     cleanUrl = trimmed;
   }
 
