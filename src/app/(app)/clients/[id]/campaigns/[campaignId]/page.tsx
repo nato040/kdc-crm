@@ -49,11 +49,16 @@ export default async function CampaignDetailPage({
   const { id, campaignId } = await params;
   const supabase = await createClient();
 
-  const { data: campaign } = await supabase
+  const { data: campaign, error: queryError } = await supabase
     .from("campaigns_latest")
     .select("*")
     .eq("id", campaignId)
     .single();
+
+  if (queryError) {
+    console.error("[CampaignDetail] Supabase query error:", queryError);
+    throw new Error(`Supabase query failed: ${queryError.message}`);
+  }
 
   if (!campaign) notFound();
 
