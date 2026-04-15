@@ -9,6 +9,7 @@ import {
   fmtPct,
   fmtCurrency,
   fmtBool,
+  fmtDayFull,
 } from "../../_components/format";
 
 function Field({ label, value }: { label: string; value: string }) {
@@ -78,6 +79,7 @@ export default async function CampaignDetailPage({
           <Field label="From email" value={campaign.from_email ?? "\u2014"} />
           <Field label="From label" value={campaign.from_label ?? "\u2014"} />
           <Field label="Send time" value={fmtDate(campaign.send_time, { includeTime: true })} />
+          <Field label="Day of week" value={fmtDayFull(campaign.send_time)} />
           <Field label="Channel" value={campaign.channel ?? "\u2014"} />
           <Field label="Status" value={campaign.status ?? "\u2014"} />
           <Field label="Archived" value={fmtBool(campaign.archived)} />

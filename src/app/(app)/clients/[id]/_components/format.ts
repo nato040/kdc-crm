@@ -11,6 +11,14 @@ const currencyFmt = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
 });
 
+// 4-decimal currency for revenue-per-recipient: $0.0234
+const rprFmt = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 4,
+  maximumFractionDigits: 4,
+});
+
 /** Format a number with thousands separators: 158221 → "158,221" */
 export function fmtCount(value: number | null | undefined): string {
   if (value == null) return "\u2014";
@@ -76,4 +84,68 @@ export function fmtText(value: string | null | undefined, maxLen?: number): {
 export function fmtBool(value: boolean | null | undefined): string {
   if (value == null) return "\u2014";
   return value ? "Yes" : "No";
+}
+
+/** Format RPR (revenue per recipient) with 4 decimal places: 0.0234 → "$0.0234" */
+export function fmtRpr(value: number | null | undefined): string {
+  if (value == null) return "\u2014";
+  return rprFmt.format(value);
+}
+
+/** Format percentage with 2 decimals: 0.0042 → "0.42%" */
+export function fmtPct2(value: number | null | undefined): string {
+  if (value == null) return "\u2014";
+  return `${(value * 100).toFixed(2)}%`;
+}
+
+/** Format percentage with 4 decimals: 0.000432 → "0.0432%" */
+export function fmtPct4(value: number | null | undefined): string {
+  if (value == null) return "\u2014";
+  return `${(value * 100).toFixed(4)}%`;
+}
+
+/** Abbreviated day of week in Eastern time: "Mon", "Tue", etc. */
+export function fmtDayAbbr(value: string | null | undefined): string {
+  if (!value) return "\u2014";
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return "\u2014";
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    weekday: "short",
+  }).format(date);
+}
+
+/** Full day of week in Eastern time: "Monday", "Tuesday", etc. */
+export function fmtDayFull(value: string | null | undefined): string {
+  if (!value) return "\u2014";
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return "\u2014";
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    weekday: "long",
+  }).format(date);
+}
+
+/**
+ * Compute orders-per-recipient as a ratio, or null if inputs are
+ * missing/zero. Caller formats with fmtPct4.
+ */
+export function computeOrdersPerRecipient(
+  conversionCount: number | null | undefined,
+  recipientCount: number | null | undefined
+): number | null {
+  if (!conversionCount || !recipientCount) return null;
+  return conversionCount / recipientCount;
+}
+
+/**
+ * Compute orders-per-click as a ratio, or null if inputs are
+ * missing/zero. Caller formats with fmtPct2.
+ */
+export function computeOrdersPerClick(
+  conversionCount: number | null | undefined,
+  clicksUnique: number | null | undefined
+): number | null {
+  if (!conversionCount || !clicksUnique) return null;
+  return conversionCount / clicksUnique;
 }
