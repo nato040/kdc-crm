@@ -127,7 +127,7 @@ export default async function AnalyticsPage({
     campaignKpiMap.set(m, e);
   }
   const campaignKpiByMonth = Array.from(campaignKpiMap.entries())
-    .sort((a, b) => a[0].localeCompare(b[0]))
+    .sort((a, b) => b[0].localeCompare(a[0]))
     .map(([month, e]) => ({
       label: monthLabel(month),
       avgCtr: e.count > 0 ? e.ctrSum / e.count : null,
